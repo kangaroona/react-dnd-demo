@@ -2,9 +2,9 @@ import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import DragSquare from './dragSquare';
-import DropSquare from './dropSquare';
+import { DropSquare } from './dropSquare';
 import './index.scss';
-
+import { CardItem } from './type';
 const CARD_INIT_ARR = [
   { id: 1, text: 'Apple', bg: 'red' },
   { id: 2, text: 'Banana', bg: 'yellow' },
@@ -13,8 +13,11 @@ const CARD_INIT_ARR = [
   { id: 5, text: 'Watermelon', bg: 'green' },
   { id: 6, text: 'Peach', bg: 'pink' },
 ];
-
-class CardSort extends React.Component<any, any> {
+type cardListState = {
+  dragCardList: CardItem[];
+  dropCardList: CardItem[];
+};
+class CardSort extends React.Component<any, cardListState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -35,7 +38,6 @@ class CardSort extends React.Component<any, any> {
         <div className="scard-move-container">
           <h2>列表排序(数量无限，有顺移)</h2>
           <DropSquare
-            dragCardList={dragCardList}
             dropCardList={dropCardList}
             updateDragAndDrop={this.updateDragAndDrop}
           />
