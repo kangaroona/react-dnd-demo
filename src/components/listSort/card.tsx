@@ -11,8 +11,7 @@ import {
   useDrag,
   useDrop,
 } from 'react-dnd';
-import ItemTypes from './type';
-
+import ItemTypes, { CardItem } from './type';
 const Card = ({
   bg,
   text,
@@ -21,24 +20,33 @@ const Card = ({
   id,
   updateDragAndDrop,
   dropCardList,
-}: any) => {
+}: {
+  bg: string;
+  text: string;
+  index: number;
+  moveCard: (dragIndex: number, hoverIndex: number) => void;
+  id: number;
+  updateDragAndDrop: any;
+  dropCardList: CardItem[];
+}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.Card,
-    collect: (monitor: any) => ({
-      isDragging: monitor.getItem() ? index === monitor.getItem().index : false, // 直接用monitor.isDragging无法监控索引更改
-      // isDragging: monitor.isDragging()
-    }),
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.getItem()
+          ? index === monitor.getItem().index
+          : false, // 直接用monitor.isDragging无法监控索引更改
+        // isDragging: monitor.isDragging(),
+      };
+    },
     // item 中包含 index 属性，则在 drop 组件 hover 和 drop 是可以根据第一个参数获取到 index 值
     item: { index, id },
 
-    end(item: any, monitor: DragSourceMonitor) {
+    end(item: { index: number; id: number }, monitor: DragSourceMonitor) {
       const idx = item.id;
-      const uselessIndex = dropCardList.findIndex(
-        (item: any) => item.id === idx
-      );
-
+      const uselessIndex = dropCardList.findIndex((item) => item.id === idx);
       /**
        * 监控是否将元素移出了列表
        */
@@ -50,9 +58,13 @@ const Card = ({
     },
   });
 
-  const [, drop] = useDrop({
+  const [{ isOver }, drop] = useDrop<
+    { index: number; id: number },
+    unknown,
+    { isOver: boolean }
+  >({
     accept: ItemTypes.Card,
-    hover(item: any, monitor: DropTargetMonitor) {
+    hover(item, monitor: DropTargetMonitor) {
       if (!ref.current) {
         return;
       }
@@ -107,12 +119,15 @@ const Card = ({
         item.index = hoverIndex;
       }
     },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
   });
 
   const style: React.CSSProperties = useMemo(
     () => ({
       // Card 为占位元素是，透明度 0.4，拖拽状态时透明度 0.2，正常情况透明度为 1
-      opacity: id === -1 ? 0.4 : isDragging ? 1 : 1,
+      opacity: id === -1 ? 0.4 : isDragging ? 0.2 : 1,
       backgroundColor: bg,
     }),
     [bg, id, isDragging]
@@ -123,7 +138,7 @@ const Card = ({
    */
   return (
     <div ref={drag(drop(ref)) as any} style={style} className="card_drag">
-      {text}
+      {text}-{index}
     </div>
   );
 };

@@ -1,17 +1,17 @@
-import { useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { useDrop } from 'react-dnd';
 import Card from './card';
-import ItemTypes from './type';
+import ItemTypes, { CardItem } from './type';
 import update from 'immutability-helper';
-export default function DropSquare({ dropCardList, updateDragAndDrop }: any) {
+export const DropSquare: FC<{
+  dropCardList: CardItem[];
+  updateDragAndDrop: any;
+}> = ({ dropCardList, updateDragAndDrop }) => {
   const [{ canDrop }, drop] = useDrop({
     accept: ItemTypes.Card,
 
     canDrop: (_item, monitor) => {
       return true;
-    },
-    hover: (item: any, monitor) => {
-      //console.log(item);
     },
     collect: (monitor) => ({
       canDrop: !!monitor.canDrop(),
@@ -28,17 +28,19 @@ export default function DropSquare({ dropCardList, updateDragAndDrop }: any) {
        */
       if (dragIndex === undefined) {
         const lessIndex = dropCardList.findIndex((item: any) => item.id === -1);
-        console.log('lessIndex', lessIndex, ',dropCardList', dropCardList);
+        // console.log('lessIndex', lessIndex, ',dropCardList', dropCardList);
         updateDragAndDrop(
           update(dropCardList, {
             $splice: [
               [lessIndex, 1],
-              [hoverIndex, 0, { bg: 'aqua', category: '放这里', id: -1 }],
+              [hoverIndex, 0, { bg: 'aqua', id: -1, text: '占位元素' }],
             ],
           })
         );
       } else {
+        console.log(dragIndex, dropCardList);
         const dragCard = dropCardList[dragIndex];
+
         updateDragAndDrop(
           update(dropCardList, {
             $splice: [
@@ -68,4 +70,4 @@ export default function DropSquare({ dropCardList, updateDragAndDrop }: any) {
         ))}
     </div>
   );
-}
+};

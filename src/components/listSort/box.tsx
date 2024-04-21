@@ -27,9 +27,11 @@ const Box = ({ bg, text, dropCardList, updateDragAndDrop }: any) => {
         ]);
       }
 
-      return box;
+      return { ...box, cpId: `${id}-${Date.now()}` };
     },
     end(_: unknown, monitor: DragSourceMonitor) {
+      const result = monitor.getDropResult();
+      console.log(_);
       const uselessIndex = dropCardList.findIndex(
         (item: any) => item.id === -1
       );
@@ -48,6 +50,7 @@ const Box = ({ bg, text, dropCardList, updateDragAndDrop }: any) => {
       } else {
         dropCardList.splice(uselessIndex, 1);
       }
+      console.log('dropCardList', dropCardList);
       // 更新 cardList 数据源
       updateDragAndDrop(dropCardList);
     },
