@@ -9,7 +9,7 @@ import MultiDrag from './multiDrag';
 export const routes = [
   {
     url: '/chess',
-    title: '官方用例',
+    title: 'chess',
     Component: Chess,
   },
   {
